@@ -1,7 +1,7 @@
 use axum::{
     extract::{Path, State},
     http::StatusCode,
-    response::{Html, Json},
+    response::Json,
     routing::{get, post, put, delete},
     Router,
 };
@@ -18,14 +18,10 @@ pub fn create_router(db_pool: DbPool) -> Router {
 
     Router::new()
         .nest("/api/todos", api_routes)
-        .nest_service("/static", ServeDir::new("static"))
-        .route("/", get(serve_index))
+        .nest_service("/", ServeDir::new("static"))
         .layer(CorsLayer::permissive())
 }
 
-async fn serve_index() -> Html<&'static str> {
-    Html(include_str!("../static/index.html"))
-}
 
 async fn get_todos_handler(State(pool): State<DbPool>) -> Result<Json<Vec<Todo>>, StatusCode> {
     match crate::database::get_todos(&pool) {
