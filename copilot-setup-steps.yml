@@ -1,0 +1,201 @@
+# GitHub Copilot Setup Steps for Rust TODO Application
+
+# This file provides setup instructions for GitHub Copilot coding agent
+# to customize the development environment for this Rust + React TODO application
+
+setup_steps:
+  - name: "Install Rust toolchain"
+    description: "Ensure Rust is installed with cargo package manager"
+    commands:
+      - "curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh"
+      - "source ~/.cargo/env"
+      - "rustup update stable"
+    verification:
+      - "cargo --version"
+      - "rustc --version"
+
+  - name: "Install Node.js and npm"
+    description: "Required for frontend development and building"
+    commands:
+      # Using Node.js LTS version
+      - "curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -"
+      - "sudo apt-get install -y nodejs"
+    verification:
+      - "node --version"
+      - "npm --version"
+
+  - name: "Verify project structure"
+    description: "Ensure all required directories and files exist"
+    commands:
+      - "ls -la"
+      - "ls -la src/"
+      - "ls -la frontend/"
+    verification:
+      - "test -f Cargo.toml"
+      - "test -f src/main.rs"
+      - "test -f frontend/package.json"
+
+  - name: "Install Rust dependencies"
+    description: "Download and compile Rust dependencies"
+    commands:
+      - "cargo check"
+    verification:
+      - "cargo check"
+
+  - name: "Install frontend dependencies"
+    description: "Install Node.js packages for React frontend"
+    commands:
+      - "cd frontend && npm install"
+    verification:
+      - "cd frontend && npm list --depth=0"
+
+  - name: "Build frontend assets"
+    description: "Compile React application to static assets"
+    commands:
+      - "cd frontend && npm run build"
+    verification:
+      - "test -f static/bundle.js"
+      - "test -f static/index.html"
+
+  - name: "Verify database setup"
+    description: "Ensure SQLite database can be created and accessed"
+    commands:
+      - "sqlite3 --version"
+    verification:
+      - "sqlite3 --version"
+
+development_environment:
+  recommended_tools:
+    - name: "Rust Language Server"
+      description: "Install rust-analyzer for IDE support"
+      command: "rustup component add rust-analyzer"
+    
+    - name: "Code formatting"
+      description: "Rust code formatter"
+      command: "rustup component add rustfmt"
+    
+    - name: "Linting"
+      description: "Rust linter for code quality"
+      command: "rustup component add clippy"
+
+  editor_configuration:
+    vscode_extensions:
+      - "rust-lang.rust-analyzer"
+      - "vadimcn.vscode-lldb"
+      - "ms-vscode.vscode-typescript-next"
+      - "bradlc.vscode-tailwindcss"
+    
+    settings_recommendations:
+      - "Enable format on save for Rust files"
+      - "Configure rust-analyzer for cargo check on save"
+      - "Set up integrated terminal for cargo commands"
+
+  environment_variables:
+    - name: "RUST_LOG"
+      value: "debug"
+      description: "Enable debug logging for development"
+    
+    - name: "DATABASE_URL"
+      value: "todos.db"
+      description: "SQLite database file location"
+
+quick_start:
+  description: "Commands to get the application running quickly"
+  steps:
+    - name: "Full application startup"
+      commands:
+        - "cargo run"
+      description: "Starts the backend server at http://localhost:3030"
+      notes:
+        - "Backend serves both API and static frontend files"
+        - "Database file (todos.db) created automatically"
+        - "Frontend must be built first with 'npm run build'"
+
+    - name: "Frontend development mode"
+      commands:
+        - "cd frontend && npm run dev"
+      description: "Starts webpack dev server for frontend-only development"
+      notes:
+        - "Runs on different port (usually 8080)"
+        - "Requires backend running separately for API calls"
+        - "Hot reload enabled for faster development"
+
+testing_setup:
+  rust_testing:
+    commands:
+      - "cargo test"
+    description: "Run Rust unit and integration tests"
+    notes:
+      - "No tests currently exist in the project"
+      - "Tests can be added in src/ files or tests/ directory"
+
+  frontend_testing:
+    commands:
+      - "cd frontend && npm test"
+    description: "Run frontend tests"
+    notes:
+      - "No tests currently configured"
+      - "Can add Jest or other testing frameworks as needed"
+
+linting_and_formatting:
+  rust:
+    format:
+      command: "cargo fmt"
+      description: "Format Rust code according to standard style"
+    
+    lint:
+      command: "cargo clippy"
+      description: "Run Rust linter for code quality checks"
+    
+    check:
+      command: "cargo check"
+      description: "Check Rust code compilation without building"
+
+  frontend:
+    format:
+      command: "cd frontend && npx prettier --write src/"
+      description: "Format JavaScript/React code (if prettier is installed)"
+    
+    lint:
+      command: "cd frontend && npm run lint"
+      description: "Run JavaScript linter (if configured)"
+
+debugging_setup:
+  rust_debugging:
+    - "Install rust-analyzer extension for VS Code"
+    - "Configure launch.json for debugging with lldb"
+    - "Use println! or dbg! macros for simple debugging"
+    - "Set RUST_LOG=debug environment variable for detailed logs"
+
+  frontend_debugging:
+    - "Use browser developer tools for React debugging"
+    - "Install React Developer Tools browser extension"
+    - "Use console.log for debugging in development"
+    - "Network tab for API request debugging"
+
+common_issues:
+  - issue: "Rust compilation errors"
+    solution: "Run 'cargo check' to see detailed error messages"
+  
+  - issue: "Frontend not updating"
+    solution: "Run 'cd frontend && npm run build' to rebuild static assets"
+  
+  - issue: "Database connection errors"
+    solution: "Ensure SQLite is installed and file permissions are correct"
+  
+  - issue: "Port 3030 already in use"
+    solution: "Kill existing process or change port in src/main.rs"
+
+  - issue: "Missing node_modules"
+    solution: "Run 'cd frontend && npm install' to install dependencies"
+
+performance_optimization:
+  development:
+    - "Use 'cargo check' instead of 'cargo build' for faster feedback"
+    - "Use frontend dev server for hot reload during development"
+    - "Consider using cargo-watch for automatic rebuilds"
+
+  production:
+    - "Build frontend with 'npm run build' for optimized assets"
+    - "Use 'cargo build --release' for optimized Rust binary"
+    - "Consider using SQLite WAL mode for better concurrency"
