@@ -1,1 +1,7 @@
 /target
+*.db
+*.db-*
+node_modules/
+build/
+dist/
+frontend/node_modules/
