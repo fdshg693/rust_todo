@@ -1,7 +1,11 @@
-/target
+# RUSTのビルド成果物
+backend/target/
 *.db
 *.db-*
 node_modules/
 build/
 dist/
 frontend/node_modules/
+
+# WEBPACKのビルド成果物
+frontend/static/

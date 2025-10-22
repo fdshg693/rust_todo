@@ -1,11 +1,12 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
 const path = require('path');
 
 module.exports = {
-  entry: './src/index.js',
+  entry: './src/main.ts',
   mode: 'development',
   output: {
-    path: path.resolve(__dirname, '../static'),
+    path: path.resolve(__dirname, 'static'),
     filename: 'bundle.js',
     clean: true,
     publicPath: '/',
@@ -13,14 +14,16 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-react', '@babel/preset-env'],
-          },
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
         },
+        exclude: /node_modules/,
       },
       {
         test: /\.css$/,
@@ -29,21 +32,28 @@ module.exports = {
     ],
   },
   plugins: [
+    new VueLoaderPlugin(),
     new HtmlWebpackPlugin({
       template: './src/index.html',
       filename: 'index.html',
     }),
   ],
   resolve: {
-    extensions: ['.js', '.jsx'],
+    extensions: ['.ts', '.js', '.vue', '.json'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+    },
   },
   devServer: {
     static: {
-      directory: path.join(__dirname, '../static'),
+      directory: path.join(__dirname, 'static'),
     },
     port: 3000,
-    proxy: {
-      '/api': 'http://localhost:3030',
-    },
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'http://localhost:3030',
+      },
+    ],
   },
 };
