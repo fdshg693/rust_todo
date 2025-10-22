@@ -2,123 +2,58 @@
   <div class="app">
     <h1>🦀 Rust TODO App with Vue</h1>
     
-    <div v-if="error" class="error">
-      {{ error }}
+    <div v-if="todoStore.error" class="error">
+      {{ todoStore.error }}
+      <button @click="todoStore.clearError" class="error-close">×</button>
     </div>
     
-    <AddTodo @add="addTodo" />
+    <AddTodo @add="handleAddTodo" />
     
-    <div v-if="loading" class="loading">
+    <div v-if="todoStore.loading" class="loading">
       Loading todos...
     </div>
     <TodoList 
       v-else
-      :todos="todos"
-      @toggle="toggleTodo"
-      @delete="deleteTodo"
+      :todos="todoStore.todos"
+      @toggle="handleToggleTodo"
+      @delete="handleDeleteTodo"
     />
+    
+    <div v-if="todoStore.todos.length > 0" class="stats">
+      <p>Total: {{ todoStore.todosCount.total }} | 
+         Completed: {{ todoStore.todosCount.completed }} | 
+         Active: {{ todoStore.todosCount.active }}</p>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { onMounted } from 'vue';
 import TodoList from './components/TodoList.vue';
 import AddTodo from './components/AddTodo.vue';
-import type { Todo, TodoInput } from './types/todo';
+import { useTodoStore } from './stores/todo';
+import type { TodoInput } from './types/todo';
 
-const API_BASE = '/api/todos';
+const todoStore = useTodoStore();
 
-const todos = ref<Todo[]>([]);
-const loading = ref(true);
-const error = ref<string | null>(null);
-
-// Fetch todos from the backend
-const fetchTodos = async () => {
-  try {
-    loading.value = true;
-    const response = await fetch(API_BASE);
-    if (!response.ok) {
-      throw new Error('Failed to fetch todos');
-    }
-    const data = await response.json();
-    todos.value = data;
-    error.value = null;
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'An error occurred';
-  } finally {
-    loading.value = false;
-  }
+// Handle add todo
+const handleAddTodo = async (todoData: TodoInput) => {
+  await todoStore.addTodo(todoData);
 };
 
-// Add a new todo
-const addTodo = async (todoData: TodoInput) => {
-  try {
-    const response = await fetch(API_BASE, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(todoData),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to create todo');
-    }
-    
-    const newTodo = await response.json();
-    todos.value = [newTodo, ...todos.value];
-    error.value = null;
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'An error occurred';
-  }
+// Handle toggle todo
+const handleToggleTodo = async (id: string, completed: boolean) => {
+  await todoStore.toggleTodo(id, completed);
 };
 
-// Toggle todo completion
-const toggleTodo = async (id: string, completed: boolean) => {
-  try {
-    const response = await fetch(`${API_BASE}/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ completed }),
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to update todo');
-    }
-    
-    const updatedTodo = await response.json();
-    todos.value = todos.value.map(todo => 
-      todo.id === id ? updatedTodo : todo
-    );
-    error.value = null;
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'An error occurred';
-  }
-};
-
-// Delete a todo
-const deleteTodo = async (id: string) => {
-  try {
-    const response = await fetch(`${API_BASE}/${id}`, {
-      method: 'DELETE',
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to delete todo');
-    }
-    
-    todos.value = todos.value.filter(todo => todo.id !== id);
-    error.value = null;
-  } catch (err) {
-    error.value = err instanceof Error ? err.message : 'An error occurred';
-  }
+// Handle delete todo
+const handleDeleteTodo = async (id: string) => {
+  await todoStore.deleteTodo(id);
 };
 
 // Load todos on component mount
 onMounted(() => {
-  fetchTodos();
+  todoStore.fetchTodos();
 });
 </script>
 
@@ -207,6 +142,37 @@ h1 {
 
 .add-todo button:hover {
   background: #5568d3;
+}
+
+.stats {
+  text-align: center;
+  margin-top: 20px;
+  padding: 15px;
+  background: #f0f0f0;
+  border-radius: 8px;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.error {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+}
+
+.error-close {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0 8px;
+  line-height: 1;
+}
+
+.error-close:hover {
+  opacity: 0.8;
 }
 
 .empty-state {

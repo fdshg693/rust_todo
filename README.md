@@ -23,6 +23,7 @@ A full-stack TODO application built with Rust (backend) and Vue.js (frontend).
 ### Frontend
 - **Vue.js 3** - Progressive JavaScript framework
 - **TypeScript** - Type-safe JavaScript
+- **Pinia** - State management library
 - **Webpack** - Module bundler
 
 ## 📋 Prerequisites
@@ -111,11 +112,27 @@ rust_todo/
 │   │   ├── main.ts          # Vue app entry point
 │   │   ├── App.vue          # Root component
 │   │   ├── components/      # Vue components
+│   │   ├── stores/          # Pinia stores for state management
+│   │   │   └── todo.ts      # Todo store with API calls
 │   │   └── types/           # TypeScript type definitions
 │   ├── package.json         # Node dependencies
 │   └── webpack.config.js    # Webpack configuration
 └── README.md
 ```
+
+## 🏪 State Management with Pinia
+
+This application uses Pinia for centralized state management. The todo store (`frontend/src/stores/todo.ts`) manages:
+
+- **State**: todos, loading status, and error messages
+- **Getters**: computed properties like completed/active todos count
+- **Actions**: async API calls (fetchTodos, addTodo, toggleTodo, deleteTodo)
+
+Benefits of using Pinia:
+- Centralized state management
+- TypeScript support out of the box
+- Devtools integration for debugging
+- Simpler API compared to Vuex
 
 ## 🔧 Development
 
