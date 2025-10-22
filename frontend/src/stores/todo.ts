@@ -1,8 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
 import type { Todo, TodoInput } from '../types/todo';
-
-const API_BASE = '/api/todos';
+import * as todoApi from '../api/todoApi';
 
 export const useTodoStore = defineStore('todo', () => {
   // State
@@ -31,12 +30,7 @@ export const useTodoStore = defineStore('todo', () => {
       loading.value = true;
       error.value = null;
       
-      const response = await fetch(API_BASE);
-      if (!response.ok) {
-        throw new Error('Failed to fetch todos');
-      }
-      
-      const data = await response.json();
+      const data = await todoApi.fetchTodos();
       todos.value = data;
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'An error occurred';
@@ -50,19 +44,7 @@ export const useTodoStore = defineStore('todo', () => {
     try {
       error.value = null;
       
-      const response = await fetch(API_BASE, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(todoData),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to create todo');
-      }
-      
-      const newTodo = await response.json();
+      const newTodo = await todoApi.createTodo(todoData);
       todos.value = [newTodo, ...todos.value];
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'An error occurred';
@@ -75,19 +57,7 @@ export const useTodoStore = defineStore('todo', () => {
     try {
       error.value = null;
       
-      const response = await fetch(`${API_BASE}/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ completed }),
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to update todo');
-      }
-      
-      const updatedTodo = await response.json();
+      const updatedTodo = await todoApi.updateTodo(id, { completed });
       todos.value = todos.value.map(todo => 
         todo.id === id ? updatedTodo : todo
       );
@@ -102,14 +72,7 @@ export const useTodoStore = defineStore('todo', () => {
     try {
       error.value = null;
       
-      const response = await fetch(`${API_BASE}/${id}`, {
-        method: 'DELETE',
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to delete todo');
-      }
-      
+      await todoApi.deleteTodo(id);
       todos.value = todos.value.filter(todo => todo.id !== id);
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'An error occurred';
