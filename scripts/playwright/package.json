@@ -1,0 +1,16 @@
+{
+  "name": "rust-todo-e2e-tests",
+  "version": "1.0.0",
+  "description": "End-to-end tests for Rust Todo application using Playwright",
+  "scripts": {
+    "test": "npx playwright test",
+    "test:headed": "npx playwright test --headed",
+    "test:ui": "npx playwright test --ui",
+    "test:debug": "npx playwright test --debug",
+    "codegen": "npx playwright codegen http://localhost:3000",
+    "report": "npx playwright show-report"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.40.0"
+  }
+}
