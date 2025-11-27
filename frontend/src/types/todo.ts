@@ -14,3 +14,9 @@ export interface TodoInput {
 export interface TodoUpdate {
   completed: boolean;
 }
+
+export interface TodoUpdateInput {
+  title?: string;
+  description?: string;
+  completed?: boolean;
+}

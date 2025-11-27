@@ -9,6 +9,7 @@
       :todo="todo"
       @toggle="handleToggle"
       @delete="handleDelete"
+      @update="handleUpdate"
     />
   </ul>
 </template>
@@ -26,6 +27,7 @@ defineProps<Props>();
 const emit = defineEmits<{
   toggle: [id: string, completed: boolean];
   delete: [id: string];
+  update: [id: string, data: { title: string; description: string | null }];
 }>();
 
 const handleToggle = (id: string, completed: boolean) => {
@@ -34,5 +36,9 @@ const handleToggle = (id: string, completed: boolean) => {
 
 const handleDelete = (id: string) => {
   emit('delete', id);
+};
+
+const handleUpdate = (id: string, data: { title: string; description: string | null }) => {
+  emit('update', id, data);
 };
 </script>

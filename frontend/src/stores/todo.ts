@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia';
 import { ref, computed } from 'vue';
-import type { Todo, TodoInput } from '../types/todo';
+import type { Todo, TodoInput, TodoUpdateInput } from '../types/todo';
 import type { FilterType, SortType, SortOrder } from '../types/filter';
 import * as todoApi from '../api/todoApi';
 
@@ -158,6 +158,21 @@ export const useTodoStore = defineStore('todo', () => {
     }
   };
 
+  const updateTodo = async (id: string, updateData: TodoUpdateInput) => {
+    try {
+      error.value = null;
+      
+      const updatedTodo = await todoApi.updateTodoPartial(id, updateData);
+      todos.value = todos.value.map(todo => 
+        todo.id === id ? updatedTodo : todo
+      );
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'An error occurred';
+      console.error('Error updating todo:', err);
+      throw err;
+    }
+  };
+
   const deleteTodo = async (id: string) => {
     try {
       error.value = null;
@@ -234,6 +249,7 @@ export const useTodoStore = defineStore('todo', () => {
     fetchTodos,
     addTodo,
     toggleTodo,
+    updateTodo,
     deleteTodo,
     clearError,
     setFilter,

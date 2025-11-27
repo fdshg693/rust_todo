@@ -1,4 +1,4 @@
-import type { Todo, TodoInput, TodoUpdate } from '../types/todo';
+import type { Todo, TodoInput, TodoUpdate, TodoUpdateInput } from '../types/todo';
 
 const API_BASE = '/api/todos';
 
@@ -87,6 +87,22 @@ export async function updateTodo(
 }
 
 /**
+ * Update a todo with partial data (title, description, completed)
+ */
+export async function updateTodoPartial(
+  id: string,
+  updateData: TodoUpdateInput
+): Promise<Todo> {
+  return fetchWithErrorHandling<Todo>(`${API_BASE}/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(updateData),
+  });
+}
+
+/**
  * Delete a todo
  */
 export async function deleteTodo(id: string): Promise<void> {
@@ -102,6 +118,7 @@ export const todoApi = {
   fetchTodos,
   createTodo,
   updateTodo,
+  updateTodoPartial,
   deleteTodo,
 };
 

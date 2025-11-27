@@ -27,6 +27,7 @@
       :todos="todoStore.filteredSortedTodos"
       @toggle="handleToggleTodo"
       @delete="handleDeleteTodo"
+      @update="handleUpdateTodo"
     />
     
     <div v-if="todoStore.todos.length > 0" class="stats">
@@ -60,6 +61,14 @@ const handleToggleTodo = async (id: string, completed: boolean) => {
 // Handle delete todo
 const handleDeleteTodo = async (id: string) => {
   await todoStore.deleteTodo(id);
+};
+
+// Handle update todo
+const handleUpdateTodo = async (id: string, data: { title: string; description: string | null }) => {
+  await todoStore.updateTodo(id, {
+    title: data.title,
+    description: data.description ?? undefined,
+  });
 };
 
 // Load todos on component mount
