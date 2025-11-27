@@ -25,6 +25,7 @@ pub struct UpdateTodo {
     pub completed: Option<bool>,
 }
 
+// WANTED EXAMPLE: Poolの使い方、genericの使い方
 pub type DbPool = Pool<SqliteConnectionManager>;
 
 pub fn create_pool() -> Result<DbPool, r2d2::Error> {
@@ -47,6 +48,7 @@ pub fn create_pool() -> Result<DbPool, r2d2::Error> {
     Ok(pool)
 }
 
+// This topic is explained in `.copilot/explanation/rust-error-types.md`
 pub fn create_todo(pool: &DbPool, create_todo: CreateTodo) -> Result<Todo, Box<dyn std::error::Error + Send + Sync>> {
     let conn = pool.get()?;
     let id = uuid::Uuid::new_v4().to_string();
@@ -71,6 +73,7 @@ pub fn get_todos(pool: &DbPool) -> Result<Vec<Todo>, Box<dyn std::error::Error +
     let conn = pool.get()?;
     let mut stmt = conn.prepare("SELECT id, title, description, completed, created_at FROM todos ORDER BY created_at DESC")?;
     
+    // WANTED EXAMPLE:　stmt.query_mapの使い方
     let todos = stmt.query_map([], |row| {
         Ok(Todo {
             id: row.get(0)?,

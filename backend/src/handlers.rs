@@ -2,7 +2,7 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Json,
-    routing::{get, post, put, delete},
+    routing::{get},
     Router,
 };
 use tower_http::{cors::CorsLayer, services::ServeDir};
@@ -11,6 +11,7 @@ use serde_json::{json, Value};
 use crate::database::{DbPool, CreateTodo, UpdateTodo, Todo};
 
 pub fn create_router(db_pool: DbPool) -> Router {
+    // This topic is explained in `.copilot/explanation/axum-routing.md`
     let api_routes = Router::new()
         .route("/", get(get_todos_handler).post(create_todo_handler))
         .route("/:id", get(get_todo_handler).put(update_todo_handler).delete(delete_todo_handler))

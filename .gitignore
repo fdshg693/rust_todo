@@ -9,3 +9,5 @@ frontend/node_modules/
 
 # WEBPACKのビルド成果物
 frontend/static/
+
+.backup/
