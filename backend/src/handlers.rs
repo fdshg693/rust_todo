@@ -2,19 +2,24 @@ use axum::{
     extract::{Path, State},
     http::StatusCode,
     response::Json,
-    routing::{get},
+    routing::get,
     Router,
 };
-use tower_http::{cors::CorsLayer, services::ServeDir};
 use serde_json::{json, Value};
+use tower_http::{cors::CorsLayer, services::ServeDir};
 
-use crate::database::{DbPool, CreateTodo, UpdateTodo, Todo};
+use crate::database::{CreateTodo, DbPool, Todo, UpdateTodo};
 
 pub fn create_router(db_pool: DbPool) -> Router {
     // This topic is explained in `.copilot/explanation/axum-routing.md`
     let api_routes = Router::new()
         .route("/", get(get_todos_handler).post(create_todo_handler))
-        .route("/:id", get(get_todo_handler).put(update_todo_handler).delete(delete_todo_handler))
+        .route(
+            "/:id",
+            get(get_todo_handler)
+                .put(update_todo_handler)
+                .delete(delete_todo_handler),
+        )
         .with_state(db_pool);
 
     Router::new()
@@ -22,7 +27,6 @@ pub fn create_router(db_pool: DbPool) -> Router {
         .nest_service("/", ServeDir::new("static"))
         .layer(CorsLayer::permissive())
 }
-
 
 async fn get_todos_handler(State(pool): State<DbPool>) -> Result<Json<Vec<Todo>>, StatusCode> {
     match crate::database::get_todos(&pool) {

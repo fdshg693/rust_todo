@@ -9,7 +9,7 @@ async fn main() {
     let db_pool = match create_pool() {
         Ok(pool) => pool,
         Err(e) => {
-            eprintln!("Failed to initialize database pool: {}", e);
+            eprintln!("Failed to initialize database pool: {e}");
             return;
         }
     };
@@ -23,7 +23,7 @@ async fn main() {
     let listener = tokio::net::TcpListener::bind("127.0.0.1:3030")
         .await
         .expect("Failed to bind to port 3030");
-        
+
     axum::serve(listener, app)
         .await
         .expect("Failed to start server");

@@ -9,12 +9,22 @@
     
     <AddTodo @add="handleAddTodo" />
     
+    <!--
+      TodoFilter: Controls for filtering and sorting todos
+      Only shown when there are todos to filter/sort
+    -->
+    <TodoFilter v-if="todoStore.todos.length > 0" />
+    
     <div v-if="todoStore.loading" class="loading">
       Loading todos...
     </div>
+    <!--
+      TodoList now receives filteredSortedTodos instead of raw todos
+      This computed property from the store handles both filtering and sorting
+    -->
     <TodoList 
       v-else
-      :todos="todoStore.todos"
+      :todos="todoStore.filteredSortedTodos"
       @toggle="handleToggleTodo"
       @delete="handleDeleteTodo"
     />
@@ -31,6 +41,7 @@
 import { onMounted } from 'vue';
 import TodoList from './components/TodoList.vue';
 import AddTodo from './components/AddTodo.vue';
+import TodoFilter from './components/TodoFilter.vue';
 import { useTodoStore } from './stores/todo';
 import type { TodoInput } from './types/todo';
 
