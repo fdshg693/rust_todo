@@ -13,3 +13,8 @@ frontend/static/
 .backup/
 
 .copilot/tasks/
+
+.copilot/temp_output/
+
+.github/agents/
+.github/prompts/
