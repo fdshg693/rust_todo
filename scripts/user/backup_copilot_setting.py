@@ -1,5 +1,6 @@
 """
-.github配下のCopilot用設定ファイルを整理するためにユーザが実行するスクリプト。
+.github配下のCopilot用設定ファイルをバックアップするためにユーザが実行するスクリプト。
+Instructionファイルなどはバックアップせず、agentファイルとpromptファイルのみを対象とする。
 File Reorganization Tool
 
 Copies files from .github/agents and .github/prompts to a configurable output

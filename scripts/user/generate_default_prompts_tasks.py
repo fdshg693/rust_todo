@@ -1,4 +1,5 @@
 """
+`.template\agents`を元に、デフォルトのプロンプトテンプレートファイルおよび、タスクファイルを生成するためにユーザが実行するスクリプト。
 Generate default prompt files and task files based on existing agent configuration files.
 
 Scans .template/agents/ folder for agent files and creates corresponding:
