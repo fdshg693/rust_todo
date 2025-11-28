@@ -10,11 +10,20 @@ frontend/node_modules/
 # WEBPACKのビルド成果物
 frontend/static/
 
+# バックアップ用ディレクトリ
 .backup/
 
+# Gihub Copilotに投げるタスクは無視する
 .copilot/tasks/
 
+# Github Copilotの一時出力は無視する
 .copilot/temp_output/
 
+# Github Copilot関連の設定ファイルは無視する
+# `.template/`フォルダで代わりにベースとなるテンプレートを管理する
 .github/agents/
 .github/prompts/
+
+# テンプレートフォルダ内のデフォルトプロンプトは無視する
+# なぜなら、`.template\agents`に`scripts\user\generate_default_prompts.py`を適用することで、自動的に生成されるからである
+.template/prompts/**/default.prompt.md
