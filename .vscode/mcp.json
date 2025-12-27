@@ -1,0 +1,12 @@
+{
+  "servers": {
+    "memory": {
+      "command": "uv",
+      "args": ["run", "--with", "mcp", "mcp\\test.py"]
+    },
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/"
+    }
+  }
+}

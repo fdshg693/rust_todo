@@ -3,6 +3,50 @@ Claude CLI Command Generator
 
 Reads YAML configuration files and generates corresponding Claude CLI commands,
 automatically updating the 'command' field in each configuration file.
+
+Usage:
+------
+    python generate_claude_commands.py <paths>
+
+Arguments:
+    paths   Comma-separated list of paths (files, directories, or glob patterns)
+
+Examples:
+    # Process a single file
+    python generate_claude_commands.py config/my_agent.yaml
+
+    # Process all YAML files in a directory
+    python generate_claude_commands.py config/
+
+    # Process multiple files
+    python generate_claude_commands.py config/agent1.yaml,config/agent2.yaml
+
+    # Use glob pattern
+    python generate_claude_commands.py "config/*.yaml"
+
+YAML Configuration Format:
+--------------------------
+    ---
+    name: "agent_name"              # Required: Name of the agent
+    model: "sonnet"                 # Required: haiku, sonnet, or opus
+    system_prompt_file: ".claude/prompts/my.txt"  # Optional: Path to system prompt file
+    system_prompt: "You are..."     # Optional: Inline system prompt (overrides file)
+    prompt: "Analyze this code"     # Optional: Initial prompt to send to Claude
+    allowed_tools:                   # Optional: List of allowed tools
+      - "Read"
+      - "Grep"
+      - "WebSearch"
+    max_turns: 10                    # Optional: Maximum conversation turns (default: 5)
+    ---
+    command: ""                     # Output: Generated command will be written here
+    error: ""                       # Output: Error message if generation fails
+
+Available Tools:
+    Bash, Edit, Glob, Grep, KillShell, NotebookEdit,
+    Read, Skill, SlashCommand, Task, Write, WebFetch, WebSearch
+
+Generated Command Format:
+    claude -p --model <model> [--system-prompt-file <file>] ["<prompt>"] [--disallowedTools ...] --max-turns <n>
 """
 
 import argparse
@@ -189,6 +233,13 @@ def generate_command(config: dict) -> tuple[str, str]:
         cmd_parts.extend(["--system-prompt-file", system_prompt_file])
     else:
         logger.warning(f"No system prompt specified for '{config.get('name', 'unknown')}'")
+    
+    # Add prompt if specified (placed before --disallowedTools)
+    prompt = config.get('prompt', '').strip()
+    if prompt:
+        # Escape double quotes in the prompt and wrap in quotes
+        escaped_prompt = prompt.replace('"', '\\"')
+        cmd_parts.append(f'"{escaped_prompt}"')
     
     # Tool permissions
     allowed_tools = config.get('allowed_tools', [])

@@ -29,3 +29,5 @@ temp_output/
 .template/prompts/**/default.prompt.md
 
 .claude/settings.local.json
+
+.venv/
